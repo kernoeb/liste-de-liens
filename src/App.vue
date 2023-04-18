@@ -59,12 +59,12 @@ function getFavicon(url: string) {
         <v-spacer />
       </v-system-bar>
       <v-container>
-        <v-row>
+        <v-row class="my-4">
           <v-col v-for="(website, index) in websites" :key="index" cols="12" md="4" sm="6">
             <v-hover>
               <template #default="{ isHovering, props }">
                 <v-card
-                  :elevation="isHovering ? 5 : 3" class="mx-auto my-4" max-width="400" rounded="lg"
+                  :elevation="isHovering ? 5 : 3" class="mx-auto" width="100%" rounded="lg"
                   v-bind="props"
                   @click="openWebsite(website.url)"
                 >
