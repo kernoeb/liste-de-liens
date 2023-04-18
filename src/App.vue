@@ -1,46 +1,49 @@
-<script>
-export default {
-  data() {
-    return {
-      websites: JSON.parse(localStorage.getItem('websites') || '[]'),
-      newWebsite: {
-        name: '',
-        url: '',
-      },
-    }
-  },
-  methods: {
-    addWebsite() {
-      if (this.newWebsite.name && this.newWebsite.url) {
-        this.websites.push(this.newWebsite)
-        this.newWebsite = {
-          name: '',
-          url: '',
-          icon: '',
-        }
-        localStorage.setItem('websites', JSON.stringify(this.websites))
-      }
-    },
-    removeWebsite(index) {
-      this.websites.splice(index, 1)
-      localStorage.setItem('websites', JSON.stringify(this.websites))
-    },
-    openWebsite(url) {
-      window.open(url, '_blank')
-    },
-    goodIcon(website) {
-      if (website.icon) {
-        return website.icon
-      }
-      else {
-        // add missing protocol
-        if (!website.url.startsWith('http'))
-          website.url = `https://${website.url}`
-        website.url = website.url.toLowerCase().trim()
-        return `https://s2.googleusercontent.com/s2/favicons?domain=${website.url}`
-      }
-    },
-  },
+<script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+import { reactive } from 'vue'
+
+interface Website {
+  name: string
+  url: string
+  icon?: string
+}
+
+const websites = useStorage<Website[]>('websites', [])
+
+const newWebsite = reactive({
+  name: '',
+  url: '',
+  icon: '',
+})
+
+function addWebsite() {
+  if (newWebsite.name && newWebsite.url) {
+    if (!newWebsite.url.startsWith('http'))
+      newWebsite.url = `https://${newWebsite.url}`
+    const url = new URL(newWebsite.url)
+    newWebsite.url = url.origin
+    websites.value.push({ ...newWebsite })
+    newWebsite.name = ''
+    newWebsite.url = ''
+    newWebsite.icon = ''
+  }
+}
+
+function removeWebsite(index: number) {
+  websites.value.splice(index, 1)
+}
+
+function openWebsite(url: string) {
+  window.open(url, '_blank')
+}
+
+function getFavicon(url: string) {
+  let sanitizedUrl = url
+
+  if (!sanitizedUrl.startsWith('http'))
+    sanitizedUrl = `https://${sanitizedUrl}`
+
+  return `https://s2.googleusercontent.com/s2/favicons?domain=${new URL(sanitizedUrl).origin}`
 }
 </script>
 
@@ -48,8 +51,6 @@ export default {
   <v-app>
     <v-main>
       <v-system-bar
-        dark
-        app
         color="primary"
       >
         <v-spacer />
@@ -58,61 +59,59 @@ export default {
       </v-system-bar>
       <v-container>
         <v-row>
-          <v-col v-for="(website, index) in websites" :key="index" cols="12" sm="6" md="4">
-            <v-hover v-slot="{ hover }">
-              <v-card class="mx-auto my-4" max-width="400" rounded="lg" :elevation="hover ? 5 : 3" @click="openWebsite(website.url)">
-                <v-card-title>
-                  <v-avatar size="20" class="mr-4">
-                    <img :src="goodIcon(website)" alt="icon">
-                  </v-avatar>
-                  {{ website.name }}
-                </v-card-title>
-                <v-card-text>
-                  {{ website.url }}
-                </v-card-text>
-                <div v-if="hover" style="position: absolute; right: 5px; top: 5px;">
-                  <v-btn
-                    icon
-                    color="red"
-                    @click.prevent="removeWebsite(index)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </div>
-              </v-card>
+          <v-col v-for="(website, index) in websites" :key="index" cols="12" md="4" sm="6">
+            <v-hover>
+              <template #default="{ isHovering, props }">
+                <v-card
+                  :elevation="isHovering ? 5 : 3" class="mx-auto my-4" max-width="400" rounded="lg"
+                  v-bind="props"
+                  @click="openWebsite(website.url)"
+                >
+                  <v-card-title>
+                    <v-avatar class="mr-2" size="20">
+                      <v-img :src="website.icon || getFavicon(website.url)" :alt="website.name" />
+                    </v-avatar>
+                    {{ website.name }}
+                  </v-card-title>
+                  <v-card-text>
+                    {{ website.url }}
+                  </v-card-text>
+                  <div v-if="isHovering" style="position: absolute; right: 5px; top: 5px;">
+                    <v-btn
+                      color="red"
+                      variant="plain"
+                      @click.stop.prevent="removeWebsite(index)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </div>
+                </v-card>
+              </template>
             </v-hover>
           </v-col>
         </v-row>
-        <v-footer app fixed class="d-flex justify-center">
-          <v-col cols="12" sm="6" md="4">
-            <v-card class="mx-auto my-4" max-width="400" elevation="0" color="#272727">
+        <v-footer app class="d-flex justify-center">
+          <v-col cols="12" md="4" sm="6">
+            <v-card class="mx-auto my-4" color="#212121" elevation="0" max-width="400">
               <v-card-text>
                 <v-text-field
                   v-model="newWebsite.name"
-                  label="Nom*"
-                  dense
-                  required
-                  hide-details
                   class="mb-2"
-                  outlined
+                  hide-details
+                  label="Nom*"
+                  autofocus
                 />
                 <v-text-field
                   v-model="newWebsite.url"
-                  label="Lien*"
-                  dense
-                  required
-                  hide-details
-                  outlined
                   class="mb-2"
+                  hide-details
+                  label="Lien*"
                   @keyup.enter="addWebsite"
                 />
                 <v-text-field
                   v-model="newWebsite.icon"
-                  label="Icône (URL)"
-                  dense
-                  required
                   hide-details
-                  outlined
+                  label="Icône (URL)"
                   @keyup.enter="addWebsite"
                 />
               </v-card-text>
