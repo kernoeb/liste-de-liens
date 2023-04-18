@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { reactive } from 'vue'
+import { mdiDelete, mdiPlus } from '@mdi/js'
 
 interface Website {
   name: string
@@ -82,7 +83,7 @@ function getFavicon(url: string) {
                       variant="plain"
                       @click.stop.prevent="removeWebsite(index)"
                     >
-                      <v-icon>mdi-delete</v-icon>
+                      <v-icon>{{ mdiDelete }}</v-icon>
                     </v-btn>
                   </div>
                 </v-card>
@@ -121,7 +122,7 @@ function getFavicon(url: string) {
                   color="primary"
                   @click="addWebsite"
                 >
-                  <v-icon>mdi-plus</v-icon>
+                  <v-icon>{{ mdiPlus }}</v-icon>
                   Ajouter
                 </v-btn>
               </v-card-actions>
