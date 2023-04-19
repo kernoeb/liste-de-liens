@@ -34,10 +34,6 @@ function removeWebsite(index: number) {
   websites.value.splice(index, 1)
 }
 
-function openWebsite(url: string) {
-  window.open(url, '_blank')
-}
-
 function getFavicon(url: string) {
   let sanitizedUrl = url
 
@@ -66,7 +62,8 @@ function getFavicon(url: string) {
                 <v-card
                   :elevation="isHovering ? 5 : 3" class="mx-auto" width="100%" rounded="lg"
                   v-bind="props"
-                  @click="openWebsite(website.url)"
+                  :href="website.url"
+                  target="_blank"
                 >
                   <v-card-title>
                     <v-avatar class="mr-2" size="20">
