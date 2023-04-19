@@ -25,7 +25,7 @@ export default defineConfig({
     IS_SINGLE_FILE ? zipPack({ outDir: '.' }) : undefined,
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'maskable_icon.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'apple-touch-icon.png', 'maskable_icon.png'],
       manifest: {
         name: 'Liste de liens',
         short_name: 'Liste de liens',
@@ -42,12 +42,6 @@ export default defineConfig({
             src: 'maskable_icon_x512.png',
             sizes: '512x512',
             type: 'image/png',
-          },
-          {
-            src: 'maskable_icon_x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
           },
         ],
       },
