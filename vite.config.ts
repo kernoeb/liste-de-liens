@@ -8,6 +8,9 @@ import zipPack from 'vite-plugin-zip-pack'
 // Utilities
 import { defineConfig } from 'vite'
 
+const IS_SINGLE_FILE = process.env.SINGLE_FILE === 'true'
+console.log('IS_SINGLE_FILE', IS_SINGLE_FILE)
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -18,11 +21,9 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
-    viteSingleFile(),
-    zipPack(
-      { outDir: '.' },
-    ),
-  ],
+    IS_SINGLE_FILE ? viteSingleFile() : undefined,
+    IS_SINGLE_FILE ? zipPack({ outDir: '.' }) : undefined,
+  ].filter(v => v !== undefined),
   define: { 'process.env': {} },
   resolve: {
     alias: {
