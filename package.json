@@ -2,12 +2,12 @@
   "name": "vuetify-project",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build:single": "vue-tsc --noEmit && SINGLE_FILE=true vite build",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview",
+    "build:single": "vue-tsc --noEmit && SINGLE_FILE=true vite build",
+    "dev": "vite",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@mdi/font": "7.2.96",
@@ -26,6 +26,7 @@
     "eslint": "^8.38.0",
     "typescript": "^5.0.4",
     "vite": "^4.2.2",
+    "vite-plugin-pwa": "^0.14.7",
     "vite-plugin-singlefile": "^0.13.5",
     "vite-plugin-vuetify": "^1.0.2",
     "vite-plugin-zip-pack": "^1.0.5",
